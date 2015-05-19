@@ -24,15 +24,15 @@ for (var i = 0; i < 100; i++)
     var cell = $('<div>');
     cell.addClass("cell"+" off");
     cell.css({
-       top :field[i].positionY,
-       left:field[i].positionX
+        top :field[i].positionY,
+        left:field[i].positionX
 
     });
     cell.data('cord', {x: field[i].x, y : field[i].y});
 
     $('#gameboard').append(cell);
 
-   // console.log(field[i]);
+    // console.log(field[i]);
 }
 
 $('.cell').css({
@@ -43,35 +43,12 @@ $('.cell').css({
 $(document).ready(function() {
     $("#gameboard").on('click', '.cell', function(event) {
         var cell = $(this);
+        var className = cell.attr('class');
+        if (className.indexOf("checked") >= 0){
+            alert("dit mag niet");
+        }
         cell.removeClass("off");
         cell.addClass("checked");
-        console.log(cell.data('cord').x,cell.data('cord').y);
     });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

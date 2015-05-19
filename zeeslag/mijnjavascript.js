@@ -45,7 +45,8 @@ $(document).ready(function() {
         var cell = $(this);
         var className = cell.attr('class');
         if (className.indexOf("checked") >= 0){
-            alert("dit mag niet");
+            var coord = cell.data('cord');
+            alert("dit mag niet "+ coord.x + " , "+coord.y);
         }
         cell.removeClass("off");
         cell.addClass("checked");

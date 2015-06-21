@@ -14,7 +14,7 @@ function coordinate(x, y, state) {
 
 var field = new Array();
 var state = "off";
-var shipSelected = "";
+var shipSelected = "none";
 for (var y = 0; y < 10; y++)
 {
     for (var x = 0; x < 10; x++)
@@ -60,7 +60,28 @@ for (var i = 0; i < 100; i++)
 $('.cell').css({
     'top': 'positionY',
     'left': 'positionX',
-    'border-radius': '3px'
+    'border-radius': '3px',
+    'cursor': 'pointer'
+});
+
+$(".cell").hover(
+    function(){
+        if(shipSelected != "none"){
+            
+        }
+        else{
+            $(this).css("background-color", "lightyellow");
+        }
+
+    }, function(){
+    var cell = $(this);
+    var className = cell.attr('class');
+    if (className.indexOf("checked") >= 0){
+        $(this).css("background-color", "lightyellow");
+    }
+    else{
+        $(this).css("background-color", "lightblue");
+    }
 });
 
 $(".board1").on('click', '.cell', function(event) {

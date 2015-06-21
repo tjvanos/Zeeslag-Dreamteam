@@ -2,6 +2,7 @@
 <html>
   <head>
       <link rel="stylesheet" href="css/bootstrap.css">
+      <link rel="stylesheet" href="css/main.css">
       <title>Zeeslag</title>
       <style>
           .cell{
@@ -19,13 +20,26 @@
       </style>
   </head>
   <body>
+  <h1 align="center">Zeeslag - The Game</h1>
+    <div class="wrapper">
+        <div class="shipContainer">
+            <h3 align="center">Ships</h3><br>
+            <ul>
+                <li id="patrolboat" onClick="shipSelector(this)">Patrol Boat</li>
+                <li id="submarine" onClick="shipSelector(this)">Submarine</li>
+                <li id="destroyer" onClick="shipSelector(this)">Destroyer</li>
+                <li id="battleship" onClick="shipSelector(this)">Battleship</li>
+                <li id="carrier" onClick="shipSelector(this)">Aircraft Carrier</li>
+            </ul>
+        </div>
+        <div class="gameboard">
+            <div class="board1"></div>
+            <div class="board2"></div>
+        </div>
+    </div>
 
-<div id="gameboard"></div>
 
-
-
-
-  <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+  <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
   <script src="mijnjavascript.js"></script>
   </body>
 </html>

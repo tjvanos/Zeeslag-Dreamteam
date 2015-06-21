@@ -51,7 +51,8 @@ knop2.on("click", function(){
     getNew.send();
     var game = JSON.parse(getNew.responseText);
     var newGame = $('<tr>');
-    newGame.html("<td>"+game._id+"</td><td>computer</td><td>"+game.player2+"</td><td>setup</td><td><a href='zeeslag.html' class='btn btn-block btn-primary btn-primary'>open spel</a></td>");
+    var link="zeeslag.html?id="+game._id+"";
+    newGame.html("<td>"+game._id+"</td><td>computer</td><td>"+game.player2+"</td><td>setup</td><td><a href="+link+" class='btn btn-block btn-primary btn-primary'>open spel</a></td>");
 
     $('#een').append(newGame);
 });

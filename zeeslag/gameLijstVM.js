@@ -2,29 +2,68 @@ var getGames= new XMLHttpRequest();
 getGames.open("GET","https://zeeslagavans.herokuapp.com/users/me/games?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.InRqb3NAYXZhbnMubmwi.bYe_bj2RBgp4F71ZHxz4wWJ7R4DRmvPiYq8HdBGGzmg",false);
 getGames.send();
 var games=JSON.parse(getGames.responseText);
-//https://zeeslagavans.herokuapp.com/games?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.InRqb3NAYXZhbnMubmwi.bYe_bj2RBgp4F71ZHxz4wWJ7R4DRmvPiYq8HdBGGzmg
+var que=false;
 
 console.log(games);
 console.log(getGames.responseText);
 
 for (var i = 0; i < games.length; i++) {
-    var col = $('<div>');
-    col.addClass("col-lg-3 col-sm-6 text-center");
-    col.attr('id', "twee");
-    col.css({
-        border: '1px solid black',
-        margin: '5px'
-    });
+    var col = $('<tr>');
+    var link="zeeslag.html?id="+games[i]._id+"";
     if(games[i].status!="que"){
-        col.html("<h3> VS. "+games[i].enemyName+"</h3>" +
-        "<p>Status: "+games[i].status+"</p>" +
-        "<a href='zeeslag.html'>Open spel ></a>");
+        col.html("<td>"+games[i]._id+"</td><td>"+games[i].enemyName+"</td><td>"+games[i].enemyId+"</td><td>"+games[i].status+"</td><td><a href="+link+" class='btn btn-block btn-primary btn-primary'>open spel</a></td>");
         $('#een').append(col);
     }else{
-        col.html("<h3>Wachten op tegenstander... </h3>");
+        que=true;
+        col.html("<td>0</td><td>Wachten</td><td>Op</td><td>Tegenstander</td><td><a class='btn btn-block btn-primary btn-warning'>wachten</a></td>");
         $('#een').append(col);
     }
 
 }
+
+var knop1=$('<button>');
+knop1.addClass("btn btn-success");
+knop1.text("Nieuw Spel(vs. speler)");
+
+knop1.on("click", function(){
+    if(que){
+        alert("U heeft al een verzoek open staan!");
+    }else{
+        var getNew= new XMLHttpRequest();
+        getNew.open("GET","https://zeeslagavans.herokuapp.com/games?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.InRqb3NAYXZhbnMubmwi.bYe_bj2RBgp4F71ZHxz4wWJ7R4DRmvPiYq8HdBGGzmg",false);
+        getNew.send();
+        var newGame = $('<tr>');
+        newGame.html("<td>0</td><td>Wachten</td><td>Op</td><td>Tegenstander</td><td><a class='btn btn-block btn-primary btn-warning'>wachten</a></td>");
+        que=true;
+        $('#een').append(newGame);
+    }
+
+});
+$('#knoppen').append(knop1);
+
+var knop2=$('<button>');
+knop2.addClass("btn btn-warning");
+knop2.text("Nieuw Spel(vs. computer)");
+
+knop2.on("click", function(){
+    var getNew= new XMLHttpRequest();
+    getNew.open("GET","https://zeeslagavans.herokuapp.com/games/AI?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.InRqb3NAYXZhbnMubmwi.bYe_bj2RBgp4F71ZHxz4wWJ7R4DRmvPiYq8HdBGGzmg",false);
+    getNew.send();
+    var game = JSON.parse(getNew.responseText);
+    var newGame = $('<tr>');
+    newGame.html("<td>"+game._id+"</td><td>computer</td><td>"+game.player2+"</td><td>setup</td><td><a href='zeeslag.html' class='btn btn-block btn-primary btn-primary'>open spel</a></td>");
+
+    $('#een').append(newGame);
+});
+$('#knoppen').append(knop2);
+
+var knop3=$('<button>');
+knop3.addClass("btn btn-primary");
+knop3.text("Refresh");
+
+knop3.on("click", function(){
+    window.location.reload();
+});
+$('#knoppen').append(knop3);
 
 

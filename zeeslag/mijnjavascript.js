@@ -2,6 +2,8 @@ $(document).ready(function() {
     
 });
 
+var cordsx=["A","B","C","D","E","F","G","H","I","J"];
+
 function coordinate(x, y, state) {
     this.x = x;
     this.y = y;
@@ -89,7 +91,7 @@ $(".board1").on('click', '.cell', function(event) {
         var className = cell.attr('class');
         if (className.indexOf("checked") >= 0){
             var coord = cell.data('cord');
-            alert("dit mag niet "+ coord.x + " , "+coord.y);
+            alert("dit mag niet "+  cordsx[coord.x] + " , "+(1+coord.y));
         }
         cell.removeClass("off");
         cell.addClass("checked");
@@ -100,7 +102,7 @@ $(".board2").on('click', '.cell', function(event) {
     var className = cell.attr('class');
     if (className.indexOf("checked") >= 0){
         var coord = cell.data('cord');
-        alert("dit mag niet "+ coord.x + " , "+coord.y);
+        alert("dit mag niet "+  cordsx[coord.x] + " , "+(1+coord.y));
     }
     cell.removeClass("off");
     cell.addClass("checked");

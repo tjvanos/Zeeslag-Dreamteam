@@ -31,6 +31,8 @@ for (var i = 0; i < 100; i++)
 {
     var cell = $('<div>');
     cell.addClass("cell"+" off");
+    cell.attr("x",field[i].x);
+    cell.attr("y",field[i].y);
     cell.css({
         top :field[i].positionY,
         left:field[i].positionX
@@ -91,6 +93,8 @@ $(".cell").hover(
             }
             var cell = $(this);
             var coord = cell.data('cord');
+            var x=coord.x;
+            var y=coord.y;
             var draw=true;
             if(isVertical){
 
@@ -98,37 +102,47 @@ $(".cell").hover(
                 if((coord.x+(length-1))>9){
                     draw=false;
                 }
-                var x=coord.x+(length-1);
-                if(coord.y==0){
-                    var y="";
-                }else{
-                    var y=coord.y;
-                }
-                var check=y+""+x;
-
+                var y=coord.y;
                 if(draw){
-                    debugger;
+
                     for (var i = 0; i < length; i++)
                     {
-                        //loop door de benodigde vakjes en kleur ze boot!
+                        var test= $('div[x='+x+'][y='+y+']');
+                        test.removeClass("off");
+                        test.addClass("boat");
+                        x++;
                     }
                 }
 
             }
         }
         else{
-            $(this).css("background-color", "lightyellow");
+            $(this).removeClass("off");
+            $(this).addClass("checked");
         }
 
     }, function(){
-    var cell = $(this);
-    var className = cell.attr('class');
-    if (className.indexOf("checked") >= 0){
-        $(this).css("background-color", "lightyellow");
-    }
-    else{
-        $(this).css("background-color", "lightblue");
-    }
+        if(shipSelected != "none"){
+            var cell = $(this);
+            var coord = cell.data('cord');
+            var x=coord.x;
+            var y=coord.y;
+            if(isVertical){
+
+            }else{
+                    for (var i = 0; i < length; i++) {
+                        var test = $('div[x=' + x + '][y=' + y + ']');
+                        test.removeClass("boat");
+                        test.addClass("off");
+                        x++;
+                    }
+            }
+        }
+        else{
+            $(this).removeClass("checked");
+            $(this).addClass("off");
+
+        }
 });
 
 $(".board1").on('click', '.cell', function(event) {

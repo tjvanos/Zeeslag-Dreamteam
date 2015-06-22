@@ -92,30 +92,13 @@ $(".cell").hover(
     }, function(){
         if(shipSelected != "none"){
             var cell = $(this);
-            var coord = cell.data('cord');
-            var x=coord.x;
-            var y=coord.y;
-            if(isVertical){
-                for (var i = 0; i < length; i++) {
-                    var test = $('div[x=' + x + '][y=' + y + ']');
-                    test.removeClass("boat");
-                    test.addClass("off");
-                    y++;
-                }
-            }else{
-                for (var i = 0; i < length; i++) {
-                    var test = $('div[x=' + x + '][y=' + y + ']');
-                    test.removeClass("boat");
-                    test.addClass("off");
-                    x++;
-                }
-            }
+            clearShip(cell);
         }
         else{
             $(this).removeClass("checked");
             $(this).addClass("off");
-
         }
+
 });
 
 $(".board1").on('click', '.cell', function(event) {
@@ -143,11 +126,11 @@ function shipSelector(element){
 }
 
 function deselectShips(){
-    $("#patrolboat").css('font-weight', 'normal');
-    $("#submarine").css('font-weight', 'normal');
-    $("#destroyer").css('font-weight', 'normal');
-    $("#battleship").css('font-weight', 'normal');
-    $("#carrier").css('font-weight', 'normal');
+    $("#0").css('font-weight', 'normal');
+    $("#1").css('font-weight', 'normal');
+    $("#2").css('font-weight', 'normal');
+    $("#3").css('font-weight', 'normal');
+    $("#4").css('font-weight', 'normal');
 }
 
 function rotateShip(){
@@ -158,7 +141,30 @@ function rotateShip(){
         isVertical = true;
     }
 }
+function clearShip(cell){
+    var cell = cell;
+    var coord = cell.data('cord');
+    var ship = ships[shipSelected];
+    var length = ship.length;
+    var x=coord.x;
+    var y=coord.y;
+    if(isVertical){
+        for (var i = 0; i < length; i++) {
+            var test = $('div[x=' + x + '][y=' + y + ']');
+            test.removeClass("boat");
+            test.addClass("off");
+            y++;
+        }
+    }else{
+        for (var i = 0; i < length; i++) {
+            var test = $('div[x=' + x + '][y=' + y + ']');
+            test.removeClass("boat");
+            test.addClass("off");
+            x++;
+        }
+    }
 
+}
 function drawShip(cell){
     var ship = ships[shipSelected];
     var length = ship.length;

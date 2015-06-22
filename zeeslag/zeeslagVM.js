@@ -40,7 +40,7 @@ for (var i = 0; i < 100; i++)
 
     $('.board1').append(cell);
 
-    // console.log(field[i]);
+     //console.log(field[i]);
 }
 
 for (var i = 0; i < 100; i++)
@@ -66,10 +66,55 @@ $('.cell').css({
     'cursor': 'pointer'
 });
 
+var length=0;
+var isVertical=false;
+
 $(".cell").hover(
+
     function(){
+
         if(shipSelected != "none"){
-            
+            if(shipSelected=="patrolboat"){
+                length=2;
+            }
+            if(shipSelected=="submarine"){
+                length=3;
+            }
+            if(shipSelected=="destroyer"){
+                length=3;
+            }
+            if(shipSelected=="battleship"){
+                length=4;
+            }
+            if(shipSelected=="carrier"){
+                length=5;
+            }
+            var cell = $(this);
+            var coord = cell.data('cord');
+            var draw=true;
+            if(isVertical){
+
+            }else{
+                if((coord.x+(length-1))>9){
+                    draw=false;
+                }
+                var x=coord.x+(length-1);
+                if(coord.y==0){
+                    var y="";
+                }else{
+                    var y=coord.y;
+                }
+                var check=y+""+x;
+
+                if(draw){
+                    debugger;
+                    for (var i = 0; i < length; i++)
+                    {
+                        //loop door de benodigde vakjes en kleur ze boot!
+                    }
+                }
+
+            }
         }
         else{
             $(this).css("background-color", "lightyellow");

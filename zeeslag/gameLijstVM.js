@@ -3,11 +3,13 @@ getGames.open("GET","https://zeeslagavans.herokuapp.com/users/me/games?token=eyJ
 getGames.send();
 var games=JSON.parse(getGames.responseText);
 var que=false;
+var comp=false;
 
 console.log(games);
 console.log(getGames.responseText);
 
 for (var i = 0; i < games.length; i++) {
+
     var col = $('<tr>');
     var link="zeeslag.html?id="+games[i]._id+"";
     if(games[i].status!="que"){

@@ -40,13 +40,20 @@ knop1.on("click", function(){
     if(que){
         alert("U heeft al een verzoek open staan!");
     }else{
-        var getNew= new XMLHttpRequest();
-        getNew.open("GET","https://zeeslagavans.herokuapp.com/games?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.InRqb3NAYXZhbnMubmwi.bYe_bj2RBgp4F71ZHxz4wWJ7R4DRmvPiYq8HdBGGzmg",false);
-        getNew.send();
-        var newGame = $('<tr>');
-        newGame.html("<td>0</td><td>Wachten</td><td>Op</td><td>Tegenstander</td><td><a class='btn btn-block btn-primary btn-warning'>wachten</a></td>");
-        que=true;
-        $('#een').append(newGame);
+        $.ajax({
+            type: "GET",
+            url: server + "games" + apiKey,
+            dataType: "json",
+            async: false,
+            success: function(data){
+                alert("Nieuw spel VS. Persoon aangevraagd!");
+                var newGame = $('<tr>');
+                newGame.html("<td>0</td><td>Wachten</td><td>Op</td><td>Tegenstander</td><td><a class='btn btn-block btn-primary btn-warning'>wachten</a></td>");
+                que=true;
+                $('#een').append(newGame);
+            }
+        });
+
     }
 
 });
@@ -57,15 +64,22 @@ knop2.addClass("btn btn-warning");
 knop2.text("Nieuw Spel(vs. computer)");
 
 knop2.on("click", function(){
-    var getNew= new XMLHttpRequest();
-    getNew.open("GET","https://zeeslagavans.herokuapp.com/games/AI?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.InRqb3NAYXZhbnMubmwi.bYe_bj2RBgp4F71ZHxz4wWJ7R4DRmvPiYq8HdBGGzmg",false);
-    getNew.send();
-    var game = JSON.parse(getNew.responseText);
-    var newGame = $('<tr>');
-    var link="zeeslag.html?id="+game._id+"";
-    newGame.html("<td>"+game._id+"</td><td>computer</td><td>"+game.player2+"</td><td>setup</td><td><a href="+link+" class='btn btn-block btn-primary btn-primary'>open spel</a></td>");
+    $.ajax({
+        type: "GET",
+        url: server + "games/AI" + apiKey,
+        dataType: "json",
+        async: false,
+        success: function(data){
+            alert("Nieuw spel VS. Computer aangevraagd!");
+            var game = data;
+            var newGame = $('<tr>');
+            var link="zeeslag.html?id="+game._id+"";
+            newGame.html("<td>"+game._id+"</td><td>computer</td><td>"+game.player2+"</td><td>setup</td><td><a href="+link+" class='btn btn-block btn-primary btn-primary'>open spel</a></td>");
 
-    $('#een').append(newGame);
+            $('#een').append(newGame);
+        }
+    });
+
 });
 $('#knoppen').append(knop2);
 

@@ -15,19 +15,27 @@
                 background-color: lightblue;
           }
           .checked{
-              background-color: lightyellow;
+              background-color: transparent;
           }
           .boat{
               background-color: grey;
           }
+          .tempBoat{
+              background-color: lightgrey;
+          }
+          .pending{
+              margin-bottom: 20px;
+              text-align: center;
+          }
+
       </style>
   </head>
   <body>
   <h1 align="center">Zeeslag - The Game</h1>
     <div class="wrapper">
         <div class="shipContainer">
-            <a href="gameLijst.html" class="btn btn-block btn-sm btn-primary"> Home</a>
-            <h3 align="center">Ships</h3><br>
+            <a href="gameLijst.html" class="btn btn-block btn-sm btn-primary">Home</a>
+            <h3 align="center" class="harbor">Ships</h3><br>
             <ul>
                 <li id="0" onClick="shipSelector(this)">Patrol Boat</li>
                 <li id="1" onClick="shipSelector(this)">Submarine</li>
@@ -35,7 +43,8 @@
                 <li id="3" onClick="shipSelector(this)">Battleship</li>
                 <li id="4" onClick="shipSelector(this)">Aircraft Carrier</li>
             </ul>
-            <a class="btn btn-block btn-sm btn-primary" onclick="rotateShip()"> Rotate ship</a>
+            <button class="btn btn-block btn-sm btn-primary rotate" onclick="rotateShip()">Rotate ship</button>
+            <div class="pending">Gameboard succesfully set! Waiting for other player..</div>
         </div>
         <div class="gameboard">
             <div class="board1"></div>

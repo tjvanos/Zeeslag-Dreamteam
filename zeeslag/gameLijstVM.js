@@ -1,12 +1,21 @@
-var getGames= new XMLHttpRequest();
-getGames.open("GET","https://zeeslagavans.herokuapp.com/users/me/games?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.InRqb3NAYXZhbnMubmwi.bYe_bj2RBgp4F71ZHxz4wWJ7R4DRmvPiYq8HdBGGzmg",false);
-getGames.send();
-var games=JSON.parse(getGames.responseText);
+var server = "https://zeeslagavans.herokuapp.com/";
+var apiKey = "?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.InRqb3NAYXZhbnMubmwi.bYe_bj2RBgp4F71ZHxz4wWJ7R4DRmvPiYq8HdBGGzmg";
+var games = {};
+
+$.ajax({
+    type: "GET",
+    url: server + "users/me/games" + apiKey,
+    dataType: "json",
+    async: false,
+    success: function(data){
+        games = data;
+    }
+});
+
 var que=false;
 var comp=false;
 
-console.log(games);
-console.log(getGames.responseText);
+
 
 for (var i = 0; i < games.length; i++) {
 

@@ -1,13 +1,42 @@
 $(document).ready(function() {
-    
+    $(".pending").hide();
 });
 
-var cordsx=["A","B","C","D","E","F","G","H","I","J"];
+var cordsx=["a","b","c","d","e","f","g","h","i","j"];
+var server = "https://zeeslagavans.herokuapp.com/"
+var apiKey = "?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.InRqb3NAYXZhbnMubmwi.bYe_bj2RBgp4F71ZHxz4wWJ7R4DRmvPiYq8HdBGGzmg"
+var gameID = GetURLParameter("id");
 
-var getShips= new XMLHttpRequest();
-getShips.open("GET","https://zeeslagavans.herokuapp.com/ships?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.InRqb3NAYXZhbnMubmwi.bYe_bj2RBgp4F71ZHxz4wWJ7R4DRmvPiYq8HdBGGzmg",false);
-getShips.send();
-var ships=JSON.parse(getShips.responseText);
+var game = {};
+var shipList = {};
+$.ajax({
+    type: "GET",
+    url: server + "games/" + gameID + apiKey,
+    async: false,
+    dataType: "json",
+    success: function(data){
+        game = data;
+        if(game.status != "started" | "done"){
+            $(".board2").hide();
+
+            //Get default shiplist if game has not started or finished yet
+            $.ajax({
+                type: "GET",
+                url: server + "ships/" + apiKey,
+                dataType: "json",
+                success: function(data){
+                    shipList = { "ships": data };
+                    console.log(shipList);
+                }
+            });
+        }
+        else{
+            $(".shipContainer").hide();
+            loadShips(game.myGameboard.ships);
+        }
+        console.log(game);
+    }
+});
 
 function coordinate(x, y, state) {
     this.x = x;
@@ -22,6 +51,8 @@ function coordinate(x, y, state) {
 var field = new Array();
 var state = "off";
 var shipSelected = "none";
+var isVertical = false;
+var placedShips = 0;
 for (var y = 0; y < 10; y++)
 {
     for (var x = 0; x < 10; x++)
@@ -73,16 +104,13 @@ $('.cell').css({
     'cursor': 'pointer'
 });
 
-var length=0;
-var isVertical = false;
-
 $(".cell").hover(
 
     function(){
 
         if(shipSelected != "none"){
             var cell = $(this);
-            drawShip(cell);
+            drawShip(cell, "temp");
         }
         else{
             $(this).removeClass("off");
@@ -92,7 +120,7 @@ $(".cell").hover(
     }, function(){
         if(shipSelected != "none"){
             var cell = $(this);
-            clearShip(cell);
+            clearTempShip(cell);
         }
         else{
             $(this).removeClass("checked");
@@ -104,7 +132,29 @@ $(".cell").hover(
 $(".board1").on('click', '.cell', function(event) {
     if(shipSelected != "none"){
         var cell = $(this);
-        drawShip(cell);
+        if(drawShip(cell, "perm") == true){
+            addShipToArray(shipSelected, cell, isVertical);
+            $("li[id='"+ shipSelected +"']").remove();
+            shipSelected = "none";
+            placedShips++;
+
+            if(placedShips > 4){
+                $(".rotate").remove();
+                $(".harbor").hide();
+                $(".pending").show();
+
+                $.ajax({
+                    type: "POST",
+                    url: server + "games/" + gameID + "/gameboards" + apiKey,
+                    data: shipList,
+                    success: function(data){
+                        console.log(data);
+                    }
+                });
+
+            }
+        }
+
     }
 });
 
@@ -118,6 +168,13 @@ $(".board2").on('click', '.cell', function(event) {
     cell.removeClass("off");
     cell.addClass("checked");
 });
+
+function addShipToArray(shipID, cell, direction){
+    var coord = cell.data('cord');
+    var startPos = { "x": cordsx[coord.x], "y": coord.y };
+    shipList.ships[shipID].startCell = startPos;
+    shipList.ships[shipID].isVertical = direction;
+}
 
 function shipSelector(element){
     deselectShips();
@@ -141,32 +198,34 @@ function rotateShip(){
         isVertical = true;
     }
 }
-function clearShip(cell){
+
+function clearTempShip(cell){
     var cell = cell;
     var coord = cell.data('cord');
-    var ship = ships[shipSelected];
+    var ship = shipList.ships[shipSelected];
     var length = ship.length;
     var x=coord.x;
     var y=coord.y;
     if(isVertical){
         for (var i = 0; i < length; i++) {
             var test = $('div[x=' + x + '][y=' + y + ']');
-            test.removeClass("boat");
+            test.removeClass("tempBoat");
             test.addClass("off");
             y++;
         }
     }else{
         for (var i = 0; i < length; i++) {
             var test = $('div[x=' + x + '][y=' + y + ']');
-            test.removeClass("boat");
+            test.removeClass("tempBoat");
             test.addClass("off");
             x++;
         }
     }
 
 }
-function drawShip(cell){
-    var ship = ships[shipSelected];
+
+function drawShip(cell, time){
+    var ship = shipList.ships[shipSelected];
     var length = ship.length;
     var cell = cell;
     var coord = cell.data('cord');
@@ -177,21 +236,42 @@ function drawShip(cell){
         if((coord.y+(length-1))>9){
             draw=false;
         }
+        else{
+            var tempY = y;
+            for (var i = 0; i < length; i++)
+            {
+                if($('div[x=' + x + '][y=' + tempY + ']').hasClass("boat")){
+                    draw=false;
+                }
+                tempY++;
+            }
+        }
         var x=coord.x;
         if(draw){
 
             for (var i = 0; i < length; i++)
             {
                 var test= $('div[x='+x+'][y='+y+']');
-                test.removeClass("off");
-                test.addClass("boat");
+                if(time === "perm"){test.removeClass("tempBoat");test.addClass("boat")}
+                else{test.removeClass("off");test.addClass("tempBoat");}
                 y++;
             }
+            return true;
         }
     }
     else{
         if((coord.x+(length-1))>9){
             draw=false;
+        }
+        else{
+            var tempX = x;
+            for (var i = 0; i < length; i++)
+            {
+                if($('div[x=' + tempX + '][y=' + y + ']').hasClass("boat")){
+                    draw=false;
+                }
+                tempX++;
+            }
         }
         var y=coord.y;
         if(draw){
@@ -200,9 +280,45 @@ function drawShip(cell){
             {
                 var test= $('div[x='+x+'][y='+y+']');
                 test.removeClass("off");
-                test.addClass("boat");
+                if(time === "perm"){test.removeClass("tempBoat");test.addClass("boat")}
+                else{test.removeClass("off");test.addClass("tempBoat");}
                 x++;
             }
+            return true;
+        }
+    }
+}
+
+function loadShips(ships){
+    for(var i = 0; i < ships.length; i++){
+        var x = cordsx.indexOf(ships[i].startCell.x)+1;
+        var y = ships[i].startCell.y;
+        var lenght = ships[i].length;
+
+        for(var j = 0; j < lenght; j++){
+            //TODO cell hitcheck
+            var cell= $('div[x='+x+'][y='+y+']');
+            cell.removeClass("off");
+            cell.addClass("boat");
+
+            if(ships[i].isVertical == true){
+                y++
+            }
+            else{
+                x++
+            }
+        }
+
+    }
+}
+
+function GetURLParameter(sParam) {
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) {
+            return sParameterName[1];
         }
     }
 }

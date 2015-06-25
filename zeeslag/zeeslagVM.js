@@ -9,30 +9,37 @@ var gameID = GetURLParameter("id");
 
 var game = {};
 var shipList = {};
+var shot = {};
 $.ajax({
     type: "GET",
     url: server + "games/" + gameID + apiKey,
-    async: false,
+    async: true,
     dataType: "json",
     success: function(data){
         game = data;
-        if(game.status != "started" | "done"){
-            $(".board2").hide();
-
-            //Get default shiplist if game has not started or finished yet
-            $.ajax({
-                type: "GET",
-                url: server + "ships/" + apiKey,
-                dataType: "json",
-                success: function(data){
-                    shipList = { "ships": data };
-                    console.log(shipList);
-                }
-            });
+        if(game.status != "started"){
+            if(game.status == "done"){
+                $(".shipContainer").hide();
+                loadShips(game.myGameboard.ships);
+                loadShots(game);
+            }else{
+                $(".board2").hide();
+                //Get default shiplist if game has not started or finished yet
+                $.ajax({
+                    type: "GET",
+                    url: server + "ships/" + apiKey,
+                    dataType: "json",
+                    success: function(data){
+                        shipList = { "ships": data };
+                        console.log(shipList);
+                    }
+                });
+            }
         }
         else{
             $(".shipContainer").hide();
             loadShips(game.myGameboard.ships);
+            loadShots(game);
         }
         console.log(game);
     }
@@ -53,9 +60,9 @@ var state = "off";
 var shipSelected = "none";
 var isVertical = false;
 var placedShips = 0;
-for (var y = 0; y < 10; y++)
+for (var y = 1; y < 11; y++)
 {
-    for (var x = 0; x < 10; x++)
+    for (var x = 1; x < 11; x++)
     {
         field.push(new coordinate(x, y, state));
     }
@@ -70,8 +77,8 @@ for (var i = 0; i < 100; i++)
     cell.attr("x",field[i].x);
     cell.attr("y",field[i].y);
     cell.css({
-        top :field[i].positionY,
-        left:field[i].positionX
+        top :field[i].positionY - 42,
+        left:field[i].positionX - 42
 
     });
     cell.data('cord', {x: field[i].x, y : field[i].y});
@@ -85,9 +92,11 @@ for (var i = 0; i < 100; i++)
 {
     var cell = $('<div>');
     cell.addClass("cell"+" off");
+    cell.attr("xx",field[i].x);
+    cell.attr("yy",field[i].y);
     cell.css({
-        top :field[i].positionY,
-        left:field[i].positionX
+        top :field[i].positionY - 42,
+        left:field[i].positionX - 42
 
     });
     cell.data('cord', {x: field[i].x, y : field[i].y});
@@ -161,12 +170,28 @@ $(".board1").on('click', '.cell', function(event) {
 $(".board2").on('click', '.cell', function(event) {
     var cell = $(this);
     var className = cell.attr('class');
-    if (className.indexOf("checked") >= 0){
-        var coord = cell.data('cord');
-        alert("dit mag niet "+  cordsx[coord.x] + " , "+(1+coord.y));
-    }
-    cell.removeClass("off");
-    cell.addClass("checked");
+    var coord = cell.data('cord');
+    shot = {"x": cordsx[(coord.x-1)], "y": coord.y};
+    $.ajax({
+        type: "POST",
+        url: server + "games/" + gameID + "/shots" + apiKey,
+        data: shot,
+        success: function(data){
+            console.log(data);
+            if(data == "BOOM"){
+                cell.removeClass("off");
+                cell.addClass("hit");
+            }
+            else if (data == "SPLASH"){
+                cell.removeClass("off");
+                cell.addClass("splashed");
+            }
+        }
+    });
+    //if (className.indexOf("checked") >= 0){
+    //    var coord = cell.data('cord');
+    //    alert("dit mag niet "+  cordsx[coord.x] + " , "+(1+coord.y));
+    //}
 });
 
 function addShipToArray(shipID, cell, direction){
@@ -309,6 +334,39 @@ function loadShips(ships){
             }
         }
 
+    }
+}
+
+function loadShots(game){
+    //Load your gameboard
+    var enemeyShots = game.myGameboard.shots;
+    debugger;
+    for (var i = 0; i < enemeyShots.length; i++){
+        var x = cordsx.indexOf(enemeyShots[i].x)+1;
+        var y = enemeyShots[i].y;
+        var cell= $('div[x='+x+'][y='+y+']');
+        cell.removeClass("off");
+        if(enemeyShots[i].isHit == true){
+            cell.removeClass("boat");
+            cell.addClass("hit");
+        } else{
+            cell.addClass("splashed");
+        }
+    }
+    //Load enemy gameboard
+    var myShots = game.enemyGameboard.shots;
+
+    for (var i = 0; i < myShots.length; i++){
+        var x = cordsx.indexOf(myShots[i].x)+1;
+        var y = myShots[i].y;
+        var cell= $('div[xx='+x+'][yy='+y+']');
+        cell.removeClass("off");
+        if(myShots[i].isHit == true){
+            cell.removeClass("boat");
+            cell.addClass("hit");
+        } else{
+            cell.addClass("splashed");
+        }
     }
 }
 

@@ -4,43 +4,16 @@
       <link rel="stylesheet" href="css/bootstrap.css">
       <link rel="stylesheet" href="css/main.css">
       <title>Zeeslag</title>
-      <style>
-          .cell{
-              border:1px solid black;
-              height:40px;
-              width:40px;
-              position:absolute;
-          }
-          .off{
-                background-color: lightblue;
-          }
-          .checked{
-              background-color: transparent;
-          }
-          .splashed{
-              background-color: transparent;
-          }
-          .hit{
-              background-color: darkred;
-          }
-          .boat{
-              background-color: grey;
-          }
-          .tempBoat{
-              background-color: lightgrey;
-          }
-          .pending{
-              margin-bottom: 20px;
-              text-align: center;
-          }
-
-      </style>
   </head>
   <body>
-  <h1 align="center">Zeeslag - The Game</h1>
+  <div class="bar">
+      <a href="gameLijst.html" class="btn btn-block btn-sm btn-primary home">Home</a>
+      <h1 align="center" style="float:left;margin-left:30px;position:relative;">Zeeslag - The Game</h1>
+      <div class="status"></div>
+      <button class="btn btn-block btn-sm btn-primary refresh" onclick="refresh()">Refresh</button>
+  </div>
     <div class="wrapper">
         <div class="shipContainer">
-            <a href="gameLijst.html" class="btn btn-block btn-sm btn-primary">Home</a>
             <h3 align="center" class="harbor">Ships</h3><br>
             <ul>
                 <li id="0" onClick="shipSelector(this)">Patrol Boat</li>

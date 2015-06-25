@@ -1,4 +1,4 @@
-var server = "https://zeeslagavans.herokuapp.com/";
+var server = "https://zeeslagavans3.herokuapp.com/";
 var apiKey = "?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.InRqb3NAYXZhbnMubmwi.bYe_bj2RBgp4F71ZHxz4wWJ7R4DRmvPiYq8HdBGGzmg";
 var games = {};
 

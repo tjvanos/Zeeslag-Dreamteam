@@ -1,15 +1,19 @@
 $(document).ready(function() {
     $(".pending").hide();
+    $(".shipContainer").hide();
+    $(".board1").hide();
+    $(".board2").hide();
 });
 
 var cordsx=["a","b","c","d","e","f","g","h","i","j"];
-var server = "https://zeeslagavans.herokuapp.com/"
+var server = "https://zeeslagavans3.herokuapp.com/"
 var apiKey = "?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.InRqb3NAYXZhbnMubmwi.bYe_bj2RBgp4F71ZHxz4wWJ7R4DRmvPiYq8HdBGGzmg"
 var gameID = GetURLParameter("id");
 
 var game = {};
 var shipList = {};
 var shot = {};
+
 $.ajax({
     type: "GET",
     url: server + "games/" + gameID + apiKey,
@@ -19,11 +23,20 @@ $.ajax({
         game = data;
         if(game.status != "started"){
             if(game.status == "done"){
+                $(".board1").show();
+                $(".board2").show();
                 $(".shipContainer").hide();
+                if(game.youWon == true){
+                    $(".status").text("Congratulations, you won!");
+                } else{
+                    $(".status").text("Too bad, you lost this time");
+                }
                 loadShips(game.myGameboard.ships);
                 loadShots(game);
             }else{
-                $(".board2").hide();
+                $(".status").text("Please place your ships");
+                $(".shipContainer").show();
+                $(".board1").show();
                 //Get default shiplist if game has not started or finished yet
                 $.ajax({
                     type: "GET",
@@ -37,7 +50,13 @@ $.ajax({
             }
         }
         else{
-            $(".shipContainer").hide();
+            if(game.yourTurn == true){
+                $(".status").text("It is your turn, give it a shot!");
+            } else{
+                $(".status").text("Waiting for enemy to shoot..");
+            }
+            $(".board1").show();
+            $(".board2").show();
             loadShips(game.myGameboard.ships);
             loadShots(game);
         }
@@ -258,7 +277,7 @@ function drawShip(cell, time){
     var y=coord.y;
     var draw=true;
     if(isVertical){
-        if((coord.y+(length-1))>9){
+        if((coord.y+(length-1))>10){
             draw=false;
         }
         else{
@@ -285,7 +304,7 @@ function drawShip(cell, time){
         }
     }
     else{
-        if((coord.x+(length-1))>9){
+        if((coord.x+(length-1))>10){
             draw=false;
         }
         else{
@@ -339,14 +358,18 @@ function loadShips(ships){
 
 function loadShots(game){
     //Load your gameboard
-    var enemeyShots = game.myGameboard.shots;
-    debugger;
-    for (var i = 0; i < enemeyShots.length; i++){
-        var x = cordsx.indexOf(enemeyShots[i].x)+1;
-        var y = enemeyShots[i].y;
+    var enemyShots = game.myGameboard.shots;
+    for (var i = 0; i < enemyShots.length; i++){
+        var x;
+        if(enemyShots[i].x == ""){
+            x = 1;
+        }else{
+            x = cordsx.indexOf(enemyShots[i].x)+1;
+        }
+        var y = enemyShots[i].y;
         var cell= $('div[x='+x+'][y='+y+']');
         cell.removeClass("off");
-        if(enemeyShots[i].isHit == true){
+        if(enemyShots[i].isHit == true){
             cell.removeClass("boat");
             cell.addClass("hit");
         } else{
@@ -379,4 +402,8 @@ function GetURLParameter(sParam) {
             return sParameterName[1];
         }
     }
+}
+
+function refresh(){
+    location.reload();
 }
